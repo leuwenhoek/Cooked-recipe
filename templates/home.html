@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipe Collection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <div class="nav-content">
+                <a href="#" class="logo">Recipes</a>
+                <div class="nav-links">
+                    <a href="#recipes">Browse</a>
+                    <a href="/about">About</a>
+                    </div>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Culinary Excellence</h1>
+                <p>Discover extraordinary recipes crafted with passion</p>
+                <div class="search-container">
+                    <input type="text" placeholder="Search for your next masterpiece..." id="searchInput">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="recipes" id="recipes">
+        <div class="container">
+            <div class="recipe-grid">
+                <div class="card">
+                    <div class="card-img">🥗</div>
+                    <div class="card-body">
+                        <div class="card-meta">
+                            <span class="tag">Salad</span>
+                            <span class="time">15 min</span>
+                        </div>
+                        <h3>Garden Fresh Salad</h3>
+                        <p>A crisp mix of seasonal vegetables with a light vinaigrette</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-img">🍝</div>
+                    <div class="card-body">
+                        <div class="card-meta">
+                            <span class="tag">Pasta</span>
+                            <span class="time">25 min</span>
+                        </div>
+                        <h3>Classic Carbonara</h3>
+                        <p>Rich and creamy Italian pasta with bacon and parmesan</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-img">🍛</div>
+                    <div class="card-body">
+                        <div class="card-meta">
+                            <span class="tag">Curry</span>
+                            <span class="time">40 min</span>
+                        </div>
+                        <h3>Thai Green Curry</h3>
+                        <p>Aromatic coconut curry with fresh vegetables and herbs</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-img">🍕</div>
+                    <div class="card-body">
+                        <div class="card-meta">
+                            <span class="tag">Italian</span>
+                            <span class="time">30 min</span>
+                        </div>
+                        <h3>Margherita Pizza</h3>
+                        <p>Simple and delicious with fresh basil and mozzarella</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-img">🥘</div>
+                    <div class="card-body">
+                        <div class="card-meta">
+                            <span class="tag">Stew</span>
+                            <span class="time">50 min</span>
+                        </div>
+                        <h3>Hearty Beef Stew</h3>
+                        <p>Tender beef with root vegetables in rich broth</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-img">🍰</div>
+                    <div class="card-body">
+                        <div class="card-meta">
+                            <span class="tag">Dessert</span>
+                            <span class="time">45 min</span>
+                        </div>
+                        <h3>Chocolate Cake</h3>
+                        <p>Moist and decadent layered chocolate cake</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        const searchInput = document.getElementById('searchInput');
+        const cards = document.querySelectorAll('.card');
+
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            
+            cards.forEach(card => {
+                const title = card.querySelector('h3').textContent.toLowerCase();
+                const description = card.querySelector('p').textContent.toLowerCase();
+                const tag = card.querySelector('.tag').textContent.toLowerCase();
+                
+                if (title.includes(searchTerm) || description.includes(searchTerm) || tag.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

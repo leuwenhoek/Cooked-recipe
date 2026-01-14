@@ -3,18 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recipe Collection</title>
+    <title>Cooked-recipe | Culinary Excellence</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
+    <style>
+        .custom-recipe-card {
+            border: 2px dashed rgba(255, 107, 53, 0.4);
+            background: rgba(255, 255, 255, 0.03);
+            text-align: center;
+            display: none;
+        }
+        #query-text { color: var(--orange); font-weight: bold; }
+        .generate-btn {
+            margin-top: 15px;
+            padding: 12px 24px;
+            background: var(--gradient-1);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        /* Style for the confirmation message */
+        #response-msg {
+            margin-top: 15px;
+            color: #4cd137;
+            font-weight: bold;
+            display: none;
+        }
+    </style>
 </head>
 <body>
     <nav>
         <div class="container">
             <div class="nav-content">
-                <a href="#" class="logo">Recipes</a>
+                <a href="/home" class="logo">Recipes</a>
                 <div class="nav-links">
                     <a href="#recipes">Browse</a>
                     <a href="/about">About</a>
-                    </div>
+                </div>
             </div>
         </div>
     </nav>
@@ -25,7 +51,7 @@
                 <h1>Culinary Excellence</h1>
                 <p>Discover extraordinary recipes crafted with passion</p>
                 <div class="search-container">
-                    <input type="text" placeholder="Search for your next masterpiece..." id="searchInput">
+                    <input type="text" placeholder="Search for recipes..." id="searchInput">
                 </div>
             </div>
         </div>
@@ -33,76 +59,24 @@
 
     <section class="recipes" id="recipes">
         <div class="container">
-            <div class="recipe-grid">
-                <div class="card">
-                    <div class="card-img">🥗</div>
-                    <div class="card-body">
-                        <div class="card-meta">
-                            <span class="tag">Salad</span>
-                            <span class="time">15 min</span>
-                        </div>
-                        <h3>Garden Fresh Salad</h3>
-                        <p>A crisp mix of seasonal vegetables with a light vinaigrette</p>
-                    </div>
-                </div>
-
+            <div class="recipe-grid" id="recipeGrid">
                 <div class="card">
                     <div class="card-img">🍝</div>
                     <div class="card-body">
-                        <div class="card-meta">
-                            <span class="tag">Pasta</span>
-                            <span class="time">25 min</span>
-                        </div>
+                        <div class="card-meta"><span class="tag">Pasta</span><span class="time">25 min</span></div>
                         <h3>Classic Carbonara</h3>
                         <p>Rich and creamy Italian pasta with bacon and parmesan</p>
                     </div>
                 </div>
 
-                <div class="card">
-                    <div class="card-img">🍛</div>
+                <div class="card custom-recipe-card" id="customCard">
+                    <div class="card-img">✨</div>
                     <div class="card-body">
-                        <div class="card-meta">
-                            <span class="tag">Curry</span>
-                            <span class="time">40 min</span>
-                        </div>
-                        <h3>Thai Green Curry</h3>
-                        <p>Aromatic coconut curry with fresh vegetables and herbs</p>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-img">🍕</div>
-                    <div class="card-body">
-                        <div class="card-meta">
-                            <span class="tag">Italian</span>
-                            <span class="time">30 min</span>
-                        </div>
-                        <h3>Margherita Pizza</h3>
-                        <p>Simple and delicious with fresh basil and mozzarella</p>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-img">🥘</div>
-                    <div class="card-body">
-                        <div class="card-meta">
-                            <span class="tag">Stew</span>
-                            <span class="time">50 min</span>
-                        </div>
-                        <h3>Hearty Beef Stew</h3>
-                        <p>Tender beef with root vegetables in rich broth</p>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-img">🍰</div>
-                    <div class="card-body">
-                        <div class="card-meta">
-                            <span class="tag">Dessert</span>
-                            <span class="time">45 min</span>
-                        </div>
-                        <h3>Chocolate Cake</h3>
-                        <p>Moist and decadent layered chocolate cake</p>
+                        <div class="tag">AI Kitchen</div>
+                        <h3>Create Custom Recipe</h3>
+                        <p>Generate a unique recipe for <span id="query-text"></span>?</p>
+                        <button class="generate-btn" id="generateBtn">Submit Request</button>
+                        <div id="response-msg"></div>
                     </div>
                 </div>
             </div>
@@ -111,22 +85,62 @@
 
     <script>
         const searchInput = document.getElementById('searchInput');
-        const cards = document.querySelectorAll('.card');
+        const cards = document.querySelectorAll('.card:not(.custom-recipe-card)');
+        const customCard = document.getElementById('customCard');
+        const queryText = document.getElementById('query-text');
+        const generateBtn = document.getElementById('generateBtn');
+        const responseMsg = document.getElementById('response-msg');
 
+        // Search logic to show/hide cards
         searchInput.addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase();
-            
+            const searchTerm = e.target.value.toLowerCase().trim();
+            let visibleCount = 0;
+
             cards.forEach(card => {
                 const title = card.querySelector('h3').textContent.toLowerCase();
-                const description = card.querySelector('p').textContent.toLowerCase();
-                const tag = card.querySelector('.tag').textContent.toLowerCase();
-                
-                if (title.includes(searchTerm) || description.includes(searchTerm) || tag.includes(searchTerm)) {
+                if (title.includes(searchTerm)) {
                     card.style.display = 'block';
+                    visibleCount++;
                 } else {
                     card.style.display = 'none';
                 }
             });
+
+            if (visibleCount === 0 && searchTerm.length > 0) {
+                customCard.style.display = 'block';
+                queryText.textContent = `"${searchTerm}"`;
+                responseMsg.style.display = 'none'; // Reset message on new search
+            } else {
+                customCard.style.display = 'none';
+            }
+        });
+
+        // Submit to Flask without redirecting
+        generateBtn.addEventListener('click', async () => {
+            const foodName = searchInput.value.trim();
+            if (!foodName) {
+                alert('Please enter a recipe name to generate.');
+                return;
+            }
+
+            try {
+                const response = await fetch('/home', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ request: foodName })
+                });
+
+                const result = await response.json();
+
+                if (result.redirect_url) {
+                    // Redirects to recipe page which will generate/render the recipe
+                    window.location.href = result.redirect_url;
+                } else if (result.message) {
+                    alert(result.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
         });
     </script>
 </body>
